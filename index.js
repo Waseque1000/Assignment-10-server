@@ -116,6 +116,7 @@ async function run() {
 
     // collection
     const visacollection = client.db("VisaDB").collection("visa");
+    const applicationVisa = client.db("VisaDB").collection("applicationVisa");
 
     // POST - Add a new visa
     app.post("/addvisa", async (req, res) => {
@@ -153,20 +154,41 @@ async function run() {
       }
     });
 
-    // DELETE - Delete a visa
+    //
     app.delete("/addvisa/:id", async (req, res) => {
       const visaId = req.params.id;
-
-      // Delete visa by ID
       const result = await visacollection.deleteOne({
         _id: new ObjectId(visaId),
       });
 
-      if (result.deletedCount > 0) {
-        res.status(200).json({ message: "Visa deleted successfully" });
-      } else {
-        res.status(404).json({ message: "Visa not found" });
+      res.send(result);
+    });
+
+    //! application for visa
+    app.post("/myvisa", async (req, res) => {
+      const newVisa = req.body;
+      console.log(newVisa);
+      const result = await applicationVisa.insertOne(newVisa);
+      res.send(result);
+    });
+
+    app.get("/myvisa", async (req, res) => {
+      try {
+        const visas = await applicationVisa.find().toArray();
+        res.send(visas);
+      } catch (error) {
+        res.status(500).send({ message: "Failed to fetch visas" });
       }
+    });
+
+    //
+    app.delete("/myvisa/:id", async (req, res) => {
+      const visaId = req.params.id;
+      const result = await applicationVisa.deleteOne({
+        _id: new ObjectId(visaId),
+      });
+
+      res.send(result);
     });
 
     // Send a ping to confirm a successful connection
