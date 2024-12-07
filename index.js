@@ -31,6 +31,7 @@ async function run() {
     // ?collection
     const visacollection = client.db("VisaDB").collection("visa");
     const applicationVisa = client.db("VisaDB").collection("applicationVisa");
+    // const visaCollection = database.collection("visa");
 
     // POST - Add a new visa
     app.post("/addvisa", async (req, res) => {
@@ -83,11 +84,34 @@ async function run() {
       res.send(result);
     });
 
-    // TODO: Update
-    // app.patch("/addvisa", async (res, req) => {
-    //   const id = req.params.id;
-    //   // console.log(id);
-    // });
+    // TODO: Update;
+    app.patch("/addvisa/:id", async (req, res) => {
+      const id = req.params.id;
+      const updatedVisa = req.body;
+
+      // Remove _id from the updatedVisa object to avoid attempting to modify it
+      delete updatedVisa._id;
+
+      // console.log("Updating visa with ID:", id);
+      // console.log("Updated visa details:", updatedVisa);
+
+      try {
+        // Update the document, excluding the _id field from the update
+        const result = await visacollection.updateOne(
+          { _id: new ObjectId(id) }, // Match by the original _id
+          { $set: updatedVisa } // Set the updated fields
+        );
+
+        if (result.matchedCount === 0) {
+          return res.status(404).send({ message: "Visa not found" });
+        }
+
+        res.status(200).send({ message: "Visa updated successfully", result });
+      } catch (error) {
+        console.error("Error updating visa:", error);
+        res.status(500).send({ message: "Failed to update visa", error });
+      }
+    });
 
     // ! my application
     // GET - Fetch applications by email
@@ -129,5 +153,5 @@ async function run() {
 run().catch(console.dir);
 
 app.listen(port, () => {
-  console.log("Server Running...");
+  console.log(`Server Running...,   ${port}`);
 });
