@@ -28,7 +28,7 @@ async function run() {
     // Connect the client to the server
     await client.connect();
 
-    // collection
+    // ?collection
     const visacollection = client.db("VisaDB").collection("visa");
     const applicationVisa = client.db("VisaDB").collection("applicationVisa");
 
@@ -47,24 +47,6 @@ async function run() {
         res.send(visas);
       } catch (error) {
         res.status(500).send({ message: "Failed to fetch visas" });
-      }
-    });
-
-    // PUT - Update a visa
-    app.put("/addvisa/:id", async (req, res) => {
-      const visaId = req.params.id;
-      const updatedVisa = req.body;
-
-      // Update visa information
-      const result = await visacollection.updateOne(
-        { _id: new ObjectId(visaId) },
-        { $set: updatedVisa }
-      );
-
-      if (result.modifiedCount > 0) {
-        res.status(200).json({ message: "Visa updated successfully" });
-      } else {
-        res.status(404).json({ message: "Visa not found or no changes made" });
       }
     });
 
@@ -99,6 +81,39 @@ async function run() {
       });
 
       res.send(result);
+    });
+
+    // TODO: Update
+    // app.patch("/addvisa", async (res, req) => {
+    //   const id = req.params.id;
+    //   // console.log(id);
+    // });
+
+    // ! my application
+    // GET - Fetch applications by email
+    app.get("/myvisa/:email", async (req, res) => {
+      const email = req.params.email; // Extract email from request params
+      // console.log(email);
+
+      try {
+        // Query the database for all documents with the matching email
+        const applications = await applicationVisa.find({ email }).toArray();
+
+        // Check if there are matching results
+        if (applications.length === 0) {
+          return res
+            .status(404)
+            .json({ message: "No applications found for this email" });
+        }
+
+        // Respond with the matched applications
+        res.status(200).send(applications);
+      } catch (error) {
+        console.error("Error fetching applications:", error);
+        res
+          .status(500)
+          .send({ message: "Failed to fetch applications", error });
+      }
     });
 
     // Send a ping to confirm a successful connection
