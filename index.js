@@ -2,11 +2,11 @@ const express = require("express");
 const cors = require("cors");
 const { MongoClient, ObjectId, ServerApiVersion } = require("mongodb");
 const app = express();
+require("dotenv").config();
 const port = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(express.json());
-require("dotenv").config();
 
 app.get("/", (req, res) => {
   res.send("Hello from server");
