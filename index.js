@@ -26,7 +26,7 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // Connect the client to the server
-    await client.connect();
+    // await client.connect();
 
     // ?collection
     const visacollection = client.db("VisaDB").collection("visa");
@@ -36,7 +36,7 @@ async function run() {
     // POST - Add a new visa
     app.post("/addvisa", async (req, res) => {
       const newVisa = req.body;
-      console.log(newVisa);
+      // console.log(newVisa);
       const result = await visacollection.insertOne(newVisa);
       res.send(result);
     });
@@ -64,7 +64,7 @@ async function run() {
     //! application for visa
     app.post("/myvisa", async (req, res) => {
       const newVisa = req.body;
-      console.log(newVisa);
+      // console.log(newVisa);
       const result = await applicationVisa.insertOne(newVisa);
       res.send(result);
     });
@@ -141,7 +141,7 @@ async function run() {
     });
 
     // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
+    // await client.db("admin").command({ ping: 1 });
     console.log(
       "Pinged your deployment. You successfully connected to MongoDB!"
     );
